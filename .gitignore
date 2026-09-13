@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+ENV/
+.pytest_cache/
+
+# Logs / runtime
+*.log
+backend/logs/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Node / React
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

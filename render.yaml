@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: ai-resume-ats-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: SENTENCE_TRANSFORMER_MODEL
+        value: lightweight-hash-256
+      - key: SPACY_MODEL_PRIMARY
+        value: en_core_web_sm
+      - key: SPACY_MODEL_SECONDARY
+        value: en_core_web_sm
+      - key: LOW_MEMORY_MODE
+        value: "true"
+      - key: FRONTEND_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
