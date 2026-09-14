@@ -95,16 +95,29 @@ def analyze_full_resume(
 
     issues_summary = generate_issues_summary(detailed_feedback)
 
+    # ``analyze_issues`` returns IssueDetail Pydantic objects, not dicts.
+    # Normalise them before using dictionary-style ``get`` access.
+    def issue_to_dict(item: Any) -> Dict[str, Any]:
+        if isinstance(item, dict):
+            return item
+        if hasattr(item, "model_dump"):
+            return item.model_dump()
+        if hasattr(item, "dict"):
+            return item.dict()
+        return vars(item)
+
+    detailed_feedback_dicts = [issue_to_dict(item) for item in detailed_feedback]
+
     critical_issues = [
         item.get("issue_title", "")
-        for item in detailed_feedback
+        for item in detailed_feedback_dicts
         if str(item.get("severity_level", "")).lower() in ("critical", "high")
     ]
     suggestions = [
-        item
-        for fb in detailed_feedback
-        for item in fb.get("action_items", [])
-        if item
+        action_item
+        for fb in detailed_feedback_dicts
+        for action_item in fb.get("action_items", [])
+        if action_item
     ]
 
     validated_raw   = skill_validation.get('validated_skills', [])
@@ -142,12 +155,16 @@ def analyze_full_resume(
         "jd_comparison":     jd_comparison_result,
         "skills":            skills,
         "matched_keywords":  (
-            jd_comparison_result['matched_keywords']
-            if jd_comparison_result else list(keywords[:20])
+            (jd_comparison_result.get('matched_keywords', [])
+             if isinstance(jd_comparison_result, dict)
+             else getattr(jd_comparison_result, 'matched_keywords', []))
+            if jd_comparison_result is not None else list(keywords[:20])
         ),
         "missing_keywords":  (
-            jd_comparison_result['missing_keywords']
-            if jd_comparison_result else []
+            (jd_comparison_result.get('missing_keywords', [])
+             if isinstance(jd_comparison_result, dict)
+             else getattr(jd_comparison_result, 'missing_keywords', []))
+            if jd_comparison_result is not None else []
         ),
         "strengths": _generate_strengths(parsed_resume, skills, projects, action_verbs, skill_validation, scores),
         "critical_issues": critical_issues,
