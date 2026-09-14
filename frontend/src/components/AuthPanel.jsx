@@ -83,13 +83,7 @@ export default function AuthPanel() {
 
   return (
     <>
-      <button
-        className="floating-auth"
-        onClick={() => setOpen(true)}
-        aria-label="Open sign in"
-      >
-        🔐 Sign in
-      </button>
+    
 
       {open && (
         <div className="modal-backdrop" onMouseDown={() => setOpen(false)}>
